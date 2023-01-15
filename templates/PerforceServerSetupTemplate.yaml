@@ -30,7 +30,7 @@ Parameters:
     Description: "Public/private key pairs allow you to securely connect to your instance after it launches"
     Type: AWS::EC2::KeyPair::KeyName
   LatestAmiId:
-    Type: "String"
+    Type: AWS::EC2::Image::Id
   PerforceAZ:
     Type: "String"
   ServerName:
@@ -45,8 +45,8 @@ Parameters:
     Type: "String"
   PerforceSecurityGroup:
     Type: "String"
-  gw1:
-    Type: "String"
+  # gw1:
+  #  Type: "String"
   DepotVolumeType:
     Type: String
     Default: st1
@@ -219,7 +219,7 @@ Resources:
           # Add yum repository
           files: 
             /etc/yum.repos.d/perforce.repo: 
-              content: !Sub | 
+              content: | 
                 [perforce]
                 name=Perforce
                 baseurl=http://package.perforce.com/yum/rhel/7/x86_64/
@@ -313,7 +313,7 @@ Resources:
         05_config_start_helix-p4d:
           files: 
             /etc/systemd/system/p4d_1.service: 
-              content: !Sub | 
+              content: | 
                 [Unit]
                 Description=Helix Server Instance 1
                 Documentation=http://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html
