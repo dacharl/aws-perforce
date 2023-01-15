@@ -1,0 +1,23 @@
+name: Lint CloudFormation Templates
+
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  cloudformation-linter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup CFN Lint
+        uses: scottbrenner/cfn-lint-action@v2
+
+      - name: Test with CFN Lint
+        run: |
+          shopt -s globstar # enable globbing
+          cfn-lint -t ./templates/*.yaml
