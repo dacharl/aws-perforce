@@ -64,19 +64,20 @@ Parameters:
     Description: "The size of the EBS volume attached for Log."
   MetadataVolumeType:
     Type: String
-    Default: gp2
+    Default: gp3
     AllowedValues:
-      - gp2
+      - gp3
       - io1
-    Description: "Select either GP2 or IO1."
+    Description: "Select either GP3 or IO1."
   MetadataVolumeSize:
     Type: String
     Default: "64"
     Description: "The size of the EBS volume attached for Metadata."
   MetadataProvisionedIops:
     Type: Number
+    Default: 3000
     ConstraintDescription: "Range is 100 to 64000 for Provisioned IOPS SSD volumes."
-    Description: "Set the provisioned IOPs between 100 and 64000. Only set if you are choosing io1 for your metadata volume type."
+    Description: "Set the provisioned IOPs between 100 and 64000 for io1. Set the IOPs between 3000 and 16000 for gp3."
   EC2Profile:
     Type: "String"
     Description: "EC2 proifile setting for IAM role"
