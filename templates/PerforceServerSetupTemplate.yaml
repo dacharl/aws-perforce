@@ -52,8 +52,8 @@ Parameters:
     Default: st1
     AllowedValues:
       - st1
-      - gp2
-    Description: "Select either ST1 or GP2."
+      - gp3
+    Description: "Select either ST1 or GP3."
   DepotVolumeSize:
     Type: String
     Default: "1024"
@@ -94,7 +94,7 @@ Resources:
       AvailabilityZone: !Ref PerforceAZ
       Size:
         Ref: LogVolumeSize
-      VolumeType: gp2
+      VolumeType: gp3
       Tags:
         - Key: Name
           Value: !Sub ${ServerName}-hxlogs
