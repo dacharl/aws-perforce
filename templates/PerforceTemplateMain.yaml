@@ -132,7 +132,7 @@ Parameters:
   MetadataProvisionedIops:
     ConstraintDescription: "Range is 100 to 64000 for Provisioned IOPS SSD volumes."
     Description: "Set the provisioned IOPs between 100 and 64000. Only set if you are choosing io1 for your metadata volume type."
-    Type: "String"
+    Type: Number
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
     ConstraintDescription: |
