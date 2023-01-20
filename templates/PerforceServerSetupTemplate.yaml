@@ -1,8 +1,8 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: "Create Perforce Servers"
 
-Parameters: 
-  InstanceType: 
+Parameters:
+  InstanceType:
     Type: String
     Default: c5.4xlarge
     AllowedValues:
@@ -50,32 +50,31 @@ Parameters:
   DepotVolumeType:
     Type: String
     Default: st1
-    AllowedValues: 
+    AllowedValues:
       - st1
       - gp2
     Description: "Select either ST1 or GP2."
   DepotVolumeSize:
     Type: String
-    Default: '1024'
+    Default: "1024"
     Description: "The size of the EBS volume attached for Depot."
   LogVolumeSize:
     Type: String
-    Default: '128'
+    Default: "128"
     Description: "The size of the EBS volume attached for Log."
   MetadataVolumeType:
     Type: String
     Default: gp2
-    AllowedValues: 
+    AllowedValues:
       - gp2
       - io1
     Description: "Select either GP2 or IO1."
   MetadataVolumeSize:
     Type: String
-    Default: '64'
+    Default: "64"
     Description: "The size of the EBS volume attached for Metadata."
   MetadataProvisionedIops:
     Type: Number
-    Default: 100
     ConstraintDescription: "Range is 100 to 64000 for Provisioned IOPS SSD volumes."
     Description: "Set the provisioned IOPs between 100 and 64000. Only set if you are choosing io1 for your metadata volume type."
   EC2Profile:
@@ -96,10 +95,10 @@ Resources:
         Ref: LogVolumeSize
       VolumeType: gp2
       Tags:
-      - Key: Name
-        Value: !Sub ${ServerName}-hxlogs
-      - Key: ServerID
-        Value: !Ref ServerID
+        - Key: Name
+          Value: !Sub ${ServerName}-hxlogs
+        - Key: ServerID
+          Value: !Ref ServerID
   VolumeHxdepots:
     Type: AWS::EC2::Volume
     Properties:
@@ -110,10 +109,10 @@ Resources:
       VolumeType:
         Ref: DepotVolumeType
       Tags:
-      - Key: ServerID
-        Value: !Ref ServerID
-      - Key: Name
-        Value: !Sub ${ServerName}-hxdepots
+        - Key: ServerID
+          Value: !Ref ServerID
+        - Key: Name
+          Value: !Sub ${ServerName}-hxdepots
   VolumeHxmetadata:
     Type: AWS::EC2::Volume
     Properties:
@@ -125,52 +124,52 @@ Resources:
       Iops:
         Ref: MetadataProvisionedIops
       Tags:
-      - Key: Name
-        Value: !Sub ${ServerName}-hxmetadata
-      - Key: ServerID
-        Value: !Ref ServerID
+        - Key: Name
+          Value: !Sub ${ServerName}-hxmetadata
+        - Key: ServerID
+          Value: !Ref ServerID
   # setup EC2 instance & perforce
   PerforceServerInstance:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: !Ref PerforceAZ
-      DisableApiTermination: 'false'
+      DisableApiTermination: "false"
       InstanceInitiatedShutdownBehavior: stop
-      EbsOptimized: 'true'
+      EbsOptimized: "true"
       ImageId: !Ref LatestAmiId
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyPairName
-      Monitoring: 'true'
+      Monitoring: "true"
       IamInstanceProfile: !Ref EC2Profile
       Tags:
-      - Key: Name
-        Value: !Ref ServerName
-      - Key: Description
-        Value: !Ref ServerDescription
-      - Key: ServerID
-        Value: !Ref ServerID
+        - Key: Name
+          Value: !Ref ServerName
+        - Key: Description
+          Value: !Ref ServerDescription
+        - Key: ServerID
+          Value: !Ref ServerID
       Volumes:
-      - Device: /dev/sdb
-        VolumeId: !Ref VolumeHxdepots
-      - Device: /dev/sdc
-        VolumeId: !Ref VolumeHxlogs
-      - Device: /dev/sdd
-        VolumeId: !Ref VolumeHxmetadata
+        - Device: /dev/sdb
+          VolumeId: !Ref VolumeHxdepots
+        - Device: /dev/sdc
+          VolumeId: !Ref VolumeHxlogs
+        - Device: /dev/sdd
+          VolumeId: !Ref VolumeHxmetadata
       NetworkInterfaces:
-      - DeleteOnTermination: 'true'
-        Description: Primary network interface
-        DeviceIndex: 0
-        SubnetId: !Ref SubnetId
-        PrivateIpAddresses:
-        - PrivateIpAddress: !Ref PrivateIpAddress
-          Primary: 'true'
-        GroupSet:
-        - !Ref PerforceSecurityGroup
+        - DeleteOnTermination: "true"
+          Description: Primary network interface
+          DeviceIndex: 0
+          SubnetId: !Ref SubnetId
+          PrivateIpAddresses:
+            - PrivateIpAddress: !Ref PrivateIpAddress
+              Primary: "true"
+          GroupSet:
+            - !Ref PerforceSecurityGroup
       UserData: !Base64
         Fn::Sub: |
           #!/bin/bash
           hostname ${ServerID}
-          
+
           # Install packages 
           yum -y update
 
@@ -180,13 +179,13 @@ Resources:
           /opt/aws/bin/cfn-init -v --configsets default --stack ${AWS::StackName} --resource PerforceServerInstance --region ${AWS::Region}
           # Signal the status from cfn-init
           # https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/cfn-signal.html
-          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PerforceServerInstance --region ${AWS::Region} 
+          /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PerforceServerInstance --region ${AWS::Region}
 
     Metadata:
       # https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-init.html
       AWS::CloudFormation::Init:
-        configSets: 
-          default: 
+        configSets:
+          default:
             - "01_config_setup_volumes"
             - "02_config_setup_yum_repo"
             - "03_config_helix-p4d"
@@ -218,9 +217,9 @@ Resources:
               ignoreErrors: false
         02_config_setup_yum_repo:
           # Add yum repository
-          files: 
-            /etc/yum.repos.d/perforce.repo: 
-              content: | 
+          files:
+            /etc/yum.repos.d/perforce.repo:
+              content: |
                 [perforce]
                 name=Perforce
                 baseurl=http://package.perforce.com/yum/rhel/7/x86_64/
@@ -312,9 +311,9 @@ Resources:
               command: "/hxdepots/sdp/Server/Unix/setup/mkdirs.sh 1"
               ignoreErrors: false
         05_config_start_helix-p4d:
-          files: 
-            /etc/systemd/system/p4d_1.service: 
-              content: | 
+          files:
+            /etc/systemd/system/p4d_1.service:
+              content: |
                 [Unit]
                 Description=Helix Server Instance 1
                 Documentation=http://www.perforce.com/perforce/doc.current/manuals/p4sag/index.html
@@ -347,16 +346,16 @@ Resources:
             04_configure_server:
               command: "/hxdepots/sdp/Server/setup/configure_new_server.sh 1"
               ignoreErrors: false
-        
+
   assocEIP:
     Type: AWS::EC2::EIPAssociation
     Properties:
       AllocationId:
         Fn::GetAtt:
-        - PerforceEIP
-        - AllocationId
+          - PerforceEIP
+          - AllocationId
       InstanceId: !Ref PerforceServerInstance
-              
+
 Outputs:
   EC2InstanceId:
     Description: InstanceId of the newly created EC2 instance
